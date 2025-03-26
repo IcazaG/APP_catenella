@@ -60,7 +60,7 @@ def gm_to_decimal(degrees, minutes, direction):
     return decimal
 
 # Calcular línea de "cierre compuertas"
-cierre_compuertas_lat = gm_to_decimal(43, 34.883, "S")
+cierre_compuertas_lat = gm_to_decimal(43, 34.88, "S")
 
 # Crear datos simulados para dashboard
 def generar_datos_simulados():
@@ -96,7 +96,7 @@ if 'lat' not in st.session_state:
 if 'lng' not in st.session_state:
     st.session_state.lng = -73.1
 if 'show_marker' not in st.session_state:
-    st .session_state.show_marker = False 
+    st.session_state.show_marker = False 
 
 # Crear layout en columnas
 col1, col2 = st.columns([1, 1.5])
@@ -113,7 +113,7 @@ with col1:
         submit = st.form_submit_button("Verificar Coordenada")
 
     if submit:
-        lat = gm_to_decimal(lat_deg, lat_min, "S")
+        lat = gm_to_decimal(lat_deg, lat_min , "S")
         lng = gm_to_decimal(lng_deg, lng_min, "W")
         point = geom.Point(lng, lat)
         if polygon.contains(point):
@@ -134,6 +134,21 @@ with col2:
     m = folium.Map(location=[-43.5, -73.1], zoom_start=8)
     folium.Polygon(locations=coords, color='blue', fill=True, fill_opacity=0.2).add_to(m)
     
+    # Añadir línea de cierre de compuertas
+    folium.Marker(
+        location=[cierre_compuertas_lat, -73.1],  # Longitud de ejemplo
+        popup="Cierre de Compuertas",
+        icon=folium.Icon(color='green')
+    ).add_to(m)
+
+    # Añadir línea punteada en la coordenada 43° 34.88' S
+    folium.PolyLine(
+        locations=[(cierre_compuertas_lat, -75.5), (cierre_compuertas_lat, -72.5)],
+        color='red',
+        weight=2,
+        dash_array='5, 5'  # Estilo de línea punteada
+    ).add_to(m)
+
     # Añadir marcador si hay coordenadas
     if st.session_state.show_marker:
         folium.Marker(
