@@ -6,11 +6,9 @@ Esta aplicación interactiva permite verificar coordenadas geográficas respecto
 
 Visualización de un polígono correspondiente al parque marino Tic-Toc de área restringida sobre un mapa interactivo.
 
-Ingreso de coordenadas (latitud y longitud) para verificar si están dentro o fuera del área restringida.
+Ingreso de coordenadas (latitud y longitud).
 
-Conversión de coordenadas desde formato DMS (grados, minutos, segundos) a decimal.
-
-La herramienta está pensada para facilitar la toma de decisiones en programas de monitoreo y gestión en tiempo real desde cualquier navegador.
+CLa herramienta está pensada para facilitar la toma de decisiones en programas de monitoreo y gestión en tiempo real desde cualquier navegador.
 
 # Link de acceso
 
