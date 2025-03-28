@@ -84,12 +84,8 @@ try:
     df_resultados['resultado_normalizado'] = df_resultados['resultado'].str.strip().str.upper()
 
     # Filtrar datos por año seleccionado
-    año_seleccionado = st.selectbox("Selecciona el año:", df_resultados['año'].dropna().unique())
-    df_filtrado = df_resultados[df_resultados['año'] == año_seleccionado]
-
-    # Contar casos positivos y negativos por mes
-    conteo_mensual = df_filtrado.groupby('nombre_mes')['resultado_normalizado'].value_counts().unstack(fill_value=0)
-    conteo_mensual = conteo_mensual.reindex(meses_nombres.values(), fill_value=0)  # Asegurar que todos los meses estén presentes
+    df_filtrado = pd.DataFrame()  # Inicializar el DataFrame filtrado
+    año_seleccionado = None  # Inicializar la variable del año seleccionado
 
 except FileNotFoundError:
     st.error("No se encontró el archivo de datos 'plotly_resultados.csv'")
@@ -172,30 +168,41 @@ with col2:
     st.markdown("<h3 class='subtitle'>📊 Casos Positivos y Negativos por Mes</h3>", unsafe_allow_html=True)
     
     # Verificar si hay datos disponibles
-    if not conteo_mensual.empty:
+    if not df_resultados.empty:
+        # Selector de año
+        año_seleccionado = st.selectbox("Selecciona el año:", df_resultados['año'].dropna().unique())
+        df_filtrado = df_resultados[df_resultados['año'] == año_seleccionado]
+
+        # Contar casos positivos y negativos por mes
+        conteo_mensual = df_filtrado.groupby('nombre_mes')['resultado_normalizado'].value_counts().unstack(fill_value=0)
+        conteo_mensual = conteo_mensual.reindex(meses_nombres.values(), fill_value=0)  # Asegurar que todos los meses estén presentes
+
         # Gráfico de barras
-        fig = px.bar(
-            conteo_mensual.reset_index(), 
-            x='nombre_mes', 
-            y=conteo_mensual.columns,
-            title='Casos Positivos y Negativos por Mes',
-            labels={'nombre_mes': 'Mes', 'value': 'Número de Casos'},
-            barmode='group'
-        )
-        
-        # Personalizar el diseño
-        fig.update_layout(
-            xaxis_title='Mes',
-            yaxis_title='Número de Casos',
-            height=400,
-            width=700
-        )
-        
-        st.plotly_chart(fig)
-        
-        # Tabla de resumen
-        st.markdown("### Resumen de Casos por Mes")
-        st.dataframe(conteo_mensual)
+        if not conteo_mensual.empty:
+            fig = px.bar(
+                conteo_mensual.reset_index(), 
+                x='nombre_mes', 
+                y=conteo_mensual.columns,
+                title='Casos Positivos y Negativos por Mes',
+                labels={'nombre_mes': 'Mes', 'value': 'Número de Casos'},
+                barmode='group'
+            )
+            
+            # Personalizar el diseño
+            fig.update_layout(
+                xaxis_title='Mes',
+                yaxis_title='Número de Casos',
+                height=400,
+                width=700
+            )
+            
+            st.plotly_chart(fig)
+            
+            # Tabla de resumen
+            st.markdown("### Resumen de Casos por Mes")
+            st.dataframe(conteo_mensual)
+        else:
+            st.warning("No hay datos disponibles para mostrar.")
     else:
         st.warning("No hay datos disponibles para mostrar.")
 
